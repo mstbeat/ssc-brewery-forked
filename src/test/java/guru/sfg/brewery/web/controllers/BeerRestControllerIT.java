@@ -4,10 +4,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@WebMvcTest
-class BeerRestControllerIT extends BaseIT {
+@SpringBootTest
+public class BeerRestControllerIT extends BaseIT {
 
 	@Test
 	void deleteBeerUrl() throws Exception {

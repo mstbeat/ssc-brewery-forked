@@ -5,10 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@WebMvcTest
-class BeerControllerIT extends BaseIT {
+@SpringBootTest
+public class BeerControllerIT extends BaseIT {
 
 	@Test
 	void initCreateionFormWithSpring() throws Exception {
