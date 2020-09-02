@@ -1,0 +1,70 @@
+package guru.sfg.brewery.web.controllers;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+
+@SpringBootTest
+class CustomerControllerIT extends BaseIT {
+
+	@ParameterizedTest(name = "#{index} with [{arguments}]")
+	@MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAdminCustomer")
+	void testListCustomerAUTH(String user, String pwd) throws Exception {
+		mockMvc.perform(get("/customers")
+				.with(httpBasic(user, pwd)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void testListCustomerNOTAUTH() throws Exception {
+		mockMvc.perform(get("/customers")
+				.with(httpBasic("user", "password")))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void testListCustomerNOTLOGGEDIN() throws Exception {
+		mockMvc.perform(get("/customers"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@DisplayName("Add Customer")
+	@Nested
+	class AddCustomer {
+
+		@Rollback
+		@Test
+		void processCreationForm() throws Exception {
+			mockMvc.perform(post("/customers/new")
+					.param("customerName", "Foo Customer")
+					.with(httpBasic("spring", "guru")))
+					.andExpect(status().is3xxRedirection());
+		}
+
+		@Rollback
+		@ParameterizedTest(name = "#{index} with [{arguments}]")
+		@MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamNotAdmin")
+		void processCreationFormNOTAUTH(String user, String pwd) throws Exception {
+			mockMvc.perform(post("/customers/new")
+					.param("customerName", "Foo Customer2")
+					.with(httpBasic(user, pwd)))
+					.andExpect(status().isForbidden());
+		}
+
+		@Test
+		void processCreationFormNOAUTH() throws Exception {
+			mockMvc.perform(post("/customers/new")
+					.param("customerName", "Foo Customer"))
+					.andExpect(status().isUnauthorized());
+		}
+	}
+
+}
