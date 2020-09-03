@@ -29,6 +29,7 @@ public class UserDataLoader implements CommandLineRunner {
 	private final PasswordEncoder passwordEncoder;
 
 	private void loadSecurityData() {
+
 		Authority createBeer = authorityRepository.save(Authority.builder().permission("beer.create").build());
 		Authority readBeer = authorityRepository.save(Authority.builder().permission("beer.read").build());
 		Authority updateBeer = authorityRepository.save(Authority.builder().permission("beer.update").build());
