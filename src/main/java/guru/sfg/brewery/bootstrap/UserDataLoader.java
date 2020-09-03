@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import guru.sfg.brewery.domain.security.Authority;
 import guru.sfg.brewery.domain.security.Role;
@@ -48,9 +49,11 @@ public class UserDataLoader implements CommandLineRunner {
 		Role customerRole = roleRepository.save(Role.builder().name("CUSTOMER").build());
 		Role userRole = roleRepository.save(Role.builder().name("USER").build());
 
-		adminRole.setAuthorities(new HashSet<>(Set.of(createBeer, updateBeer, readBeer, deleteBeer, createCustomer, readCustomer, 
-					updateCustomer, deleteCustomer, createBrewery, readBrewery, updateBrewery, deleteBrewery)));
+		adminRole.setAuthorities(new HashSet<>(Set.of(createBeer, readBeer, updateBeer, deleteBeer, createCustomer, readCustomer,
+				updateCustomer, deleteCustomer, createBrewery, readBrewery, updateBrewery, deleteBrewery)));
+
 		customerRole.setAuthorities(new HashSet<>(Set.of(readBeer, readCustomer, readBrewery)));
+
 		userRole.setAuthorities(new HashSet<>(Set.of(readBeer, readCustomer, readBrewery)));
 
 		roleRepository.saveAll(Arrays.asList(adminRole, customerRole, userRole));
@@ -76,6 +79,7 @@ public class UserDataLoader implements CommandLineRunner {
 		log.debug("Users Loaded: " + userRepository.count());
 	}
 
+	@Transactional
 	@Override
 	public void run(String... args) throws Exception {
 		if (authorityRepository.count() == 0) {

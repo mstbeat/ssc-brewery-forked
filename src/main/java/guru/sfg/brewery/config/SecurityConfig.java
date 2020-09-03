@@ -2,18 +2,12 @@ package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import guru.sfg.brewery.security.RestHeaderAuthFilter;
-import guru.sfg.brewery.security.RestUrlAuthFilter;
 import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 
 @Configuration
@@ -21,41 +15,37 @@ import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
-		RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
-		filter.setAuthenticationManager(authenticationManager);
-		return filter;
-	}
-
-	public RestUrlAuthFilter restUrlAuthFilter(AuthenticationManager authenticationManager) {
-		RestUrlAuthFilter filter = new RestUrlAuthFilter(new AntPathRequestMatcher("/api/**"));
-		filter.setAuthenticationManager(authenticationManager);
-		return filter;
-	}
+//	public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
+//		RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
+//		filter.setAuthenticationManager(authenticationManager);
+//		return filter;
+//	}
+//
+//	public RestUrlAuthFilter restUrlAuthFilter(AuthenticationManager authenticationManager) {
+//		RestUrlAuthFilter filter = new RestUrlAuthFilter(new AntPathRequestMatcher("/api/**"));
+//		filter.setAuthenticationManager(authenticationManager);
+//		return filter;
+//	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(restHeaderAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
-				.csrf().disable();
-
-		http.addFilterBefore(restUrlAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+//		http.addFilterBefore(restHeaderAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+//				.csrf().disable();
+//
+//		http.addFilterBefore(restUrlAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
 
 		http
 				.authorizeRequests(authorize -> {
 					authorize
 							.antMatchers("/h2-console/**").permitAll() // do not use in production!
-							.antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-//							.antMatchers(HttpMethod.GET, "/api/v1/beer/**").hasAnyRole("ADMIN", "CUSTOMER", "USER")
-//							.mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").hasAnyRole("ADMIN", "CUSTOMER", "USER")
-							.mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
-							.mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries").hasAnyRole("ADMIN", "CUSTOMER")
-							.mvcMatchers("/beers/find", "/beers/{beerId}").hasAnyRole("ADMIN", "CUSTOMER", "USER");
+							.antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll();
 				})
 				.authorizeRequests()
 				.anyRequest().authenticated()
 				.and()
 				.formLogin().and()
-				.httpBasic();
+				.httpBasic()
+				.and().csrf().disable();
 		
 		// h2 console config
 		http.headers().frameOptions().sameOrigin();
