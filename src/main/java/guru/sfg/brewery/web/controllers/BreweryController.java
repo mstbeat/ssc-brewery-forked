@@ -26,26 +26,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import guru.sfg.brewery.domain.Brewery;
+import guru.sfg.brewery.security.perms.BreweryReadPermission;
 import guru.sfg.brewery.services.BreweryService;
 import lombok.RequiredArgsConstructor;
-
 
 @RequiredArgsConstructor
 @RequestMapping("/brewery")
 @Controller
 public class BreweryController {
 
-    private final BreweryService breweryService;
+	private final BreweryService breweryService;
 
-    @GetMapping({"/breweries", "/breweries/index", "/breweries/index.html", "/breweries.html"})
-    public String listBreweries(Model model) {
-        model.addAttribute("breweries", breweryService.getAllBreweries());
-        return "breweries/index";
-    }
-    
-    @GetMapping("/api/v1/breweries")
-    public @ResponseBody
-    List<Brewery> getBreweriesJson(){
-        return breweryService.getAllBreweries();
-    }
+	@BreweryReadPermission
+	@GetMapping({ "/breweries", "/breweries/index", "/breweries/index.html", "/breweries.html" })
+	public String listBreweries(Model model) {
+		model.addAttribute("breweries", breweryService.getAllBreweries());
+		return "breweries/index";
+	}
+
+	@BreweryReadPermission
+	@GetMapping("/api/v1/breweries")
+	public @ResponseBody List<Brewery> getBreweriesJson() {
+		return breweryService.getAllBreweries();
+	}
 }
